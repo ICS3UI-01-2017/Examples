@@ -32,6 +32,8 @@ public class MethodsExample {
         return answer;
     }
     
+    // this will not change the original variable
+    // create a function type if you want to return a value changed
     public void addFive(int a){
         a = a + 5;
     }
