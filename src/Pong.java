@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -28,7 +29,7 @@ public class Pong extends JComponent {
     static final int HEIGHT = 600;
     
     //Title of the window
-    String title = "My Game";
+    String title = "My Pong Game";
 
     // sets the framerate and delay for our game
     // you just need to select an approproate framerate
@@ -47,6 +48,8 @@ public class Pong extends JComponent {
     
     boolean player1Up = false;
     boolean player1Down = false;
+    boolean player2Up = false;
+    boolean player2Down = false;
     
     
     int ballSize = 30;
@@ -55,6 +58,10 @@ public class Pong extends JComponent {
     int ballYDirection = -1;
     int ballSpeed = 2;
     
+    int player1Score = 0;
+    int player2Score = 0;
+    
+    Font biggerFont = new Font("arial", Font.BOLD, 42);
     
 
     // GAME VARIABLES END HERE   
@@ -103,6 +110,12 @@ public class Pong extends JComponent {
         
         // switch to white
         g.setColor(Color.WHITE);
+        
+        // draw scores
+        g.setFont(biggerFont);
+        g.drawString("" + player1Score, WIDTH/2 - 100, 50);
+        g.drawString("" + player2Score, WIDTH/2 + 100, 50);
+        
         // draw the players
         g.fillRect(player1.x, player1.y, 
                       player1.width, player1.height);
@@ -161,10 +174,52 @@ public class Pong extends JComponent {
             
             
             // move player 1
-            if(player1Up){
+            if(player1Up && player1.y > 0){
                 player1.y = player1.y - paddleSpeed;
-            }else if(player1Down){
+            }else if(player1Down && player1.y + player1.height < HEIGHT){
                 player1.y = player1.y + paddleSpeed;
+            }
+            
+            
+            // move player 2
+            if(player2Up && player2.y > 0){
+                player2.y = player2.y - paddleSpeed;
+            }else if(player2Down && player2.y + player2.height < HEIGHT){
+                player2.y = player2.y + paddleSpeed;
+            }
+            
+            // did the ball hit paddle 1
+            if(ball.intersects(player1)){
+                ballXDirection = ballXDirection * -1;
+            }
+            
+            // did the ball hit paddle 2
+            if(ball.intersects(player2)){
+                ballXDirection = ballXDirection * -1;
+            }
+            
+            // ball hit left side of screen
+            if(ball.x < 0){
+                player2Score++;
+                ball.x = WIDTH/2 - ball.width/2;
+                ball.y = HEIGHT/2 - ball.height/2;
+                ballXDirection = ballXDirection *-1;
+            }
+            
+            // ball hit right side of screen
+            if(ball.x + ball.width > WIDTH){
+                player1Score++;
+                ball.x = WIDTH/2 - ball.width/2;
+                ball.y = HEIGHT/2 - ball.height/2;
+                ballXDirection = ballXDirection * -1;
+            }
+            
+            
+            if(player1Score == 10){
+                done = true;
+            }
+            if(player2Score == 10){
+                done = true;
             }
             
             // GAME LOGIC ENDS HERE 
@@ -228,6 +283,10 @@ public class Pong extends JComponent {
                 player1Up = true;
             }else if(key == KeyEvent.VK_S){
                 player1Down = true;
+            }else if(key == KeyEvent.VK_UP){
+                player2Up = true;
+            }else if(key == KeyEvent.VK_DOWN){
+                player2Down = true;
             }
         }
         
@@ -241,6 +300,10 @@ public class Pong extends JComponent {
                 player1Up = false;
             }else if(key == KeyEvent.VK_S){
                 player1Down = false;
+            }else if(key == KeyEvent.VK_UP){
+                player2Up = false;
+            }else if(key == KeyEvent.VK_DOWN){
+                player2Down = false;
             }
         }
     }
